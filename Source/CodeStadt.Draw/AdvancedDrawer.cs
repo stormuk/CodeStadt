@@ -34,6 +34,8 @@ namespace CodeStadt.Draw
 
         }
 
+        
+
         public void DrawFilledPolygon(Brush brush, params Coordinate3D [] points)
         {
             List<Coordinate2D> coords = new List<Coordinate2D>();
@@ -61,7 +63,9 @@ namespace CodeStadt.Draw
             //not sure if this is correct
             if (point.Z == 0 || viewPoint.Z == 0) return point.X;
 
-            return (((point.X - viewPoint.X) * (screenZ - viewPoint.Z)) / (point.Z * viewPoint.Z)) + viewPoint.X;
+            //return (((point.X - viewPoint.X) * (screenZ - viewPoint.Z)) / (point.Z * viewPoint.Z)) + viewPoint.X;
+
+            return (((screenZ - viewPoint.Z) / (point.Z - viewPoint.Z)) * (point.X - viewPoint.X)) + viewPoint.X;
         }
 
         private static int CalculateScreenY(Coordinate3D point, Coordinate3D viewPoint, int screenZ)
@@ -69,7 +73,9 @@ namespace CodeStadt.Draw
             //not sure if this is correct
             if (point.Z == 0 || viewPoint.Z == 0) return point.Y;
 
-            return (((point.Y - viewPoint.Y) * (screenZ - viewPoint.Z)) / (point.Z * viewPoint.Z))  +viewPoint.Y;
+            //return (((point.Y - viewPoint.Y) * (screenZ - viewPoint.Z)) / (point.Z * viewPoint.Z))  +viewPoint.Y;
+
+            return (((screenZ - viewPoint.Z) / (point.Z - viewPoint.Z)) * (point.Y - viewPoint.Y)) + viewPoint.Y;
         }
 
 

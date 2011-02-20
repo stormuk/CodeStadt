@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Driven.Metrics.metrics;
-using Driven.Metrics;
-using Driven.Metrics.Reporting;
-using System.Drawing;
-using CodeStadt.Draw;
-using System.Drawing.Imaging;
-using System.IO;
-
-namespace CodeStadt.Application
+﻿namespace CodeStadt.Application
 {
+    using System;
+    using System.IO;
+    using System.Linq;
+    using CodeStadt.Draw.RayTracer;
+    using CodeStadt.Draw.RayTracer.Environment;
+    using CodeStadt.Draw.RayTracer.Environment.Objects;
+    using Driven.Metrics.metrics;
+    using Driven.Metrics.Reporting;
+
     class Program
     {
         /// <summary>
@@ -56,113 +53,65 @@ namespace CodeStadt.Application
                 });
             }
 
-          // Console.ReadLine();
+            // Console.ReadLine();
 
             Console.WriteLine("Going to try and draw an image :-)");
 
-            
-            
-            int screenZ = 1;
+            // Lets ray trace something
+            string raytraceFileName = "raytrace.jpg";
+            if (File.Exists(raytraceFileName)) File.Delete(raytraceFileName);
 
-            string simpleFileName = "simple.jpg";
-            if (File.Exists(simpleFileName)) File.Delete(simpleFileName);
-
-            Bitmap simpleMap = new Bitmap(1000, 1000);
-            
-            Graphics simpleImage = Graphics.FromImage(simpleMap);
-
-            //front square
-            Coordinate3D coord1 = new Coordinate3D(430, 430, 1);
-            Coordinate3D coord2 = new Coordinate3D(480, 430, 1);
-            Coordinate3D coord3 = new Coordinate3D(480, 480, 1);
-            Coordinate3D coord4 = new Coordinate3D(430, 480, 1);
-
-            //rear square
-            Coordinate3D coord11 = new Coordinate3D(450, 450, 2);
-            Coordinate3D coord21 = new Coordinate3D(520, 450, 2);
-            Coordinate3D coord31 = new Coordinate3D(520, 520, 2);
-            Coordinate3D coord41 = new Coordinate3D(450, 520, 2);
-
-
-            //draw front square
-            SimpleDrawer.DrawLine(simpleImage, coord1, coord2, screenZ);
-            SimpleDrawer.DrawLine(simpleImage, coord2, coord3, screenZ);
-            SimpleDrawer.DrawLine(simpleImage, coord3, coord4, screenZ);
-            SimpleDrawer.DrawLine(simpleImage, coord4, coord1, screenZ);
-
-
-            //draw rear square
-
-            SimpleDrawer.DrawLine(simpleImage, coord11, coord21, screenZ);
-            SimpleDrawer.DrawLine(simpleImage, coord21, coord31, screenZ);
-            SimpleDrawer.DrawLine(simpleImage, coord31, coord41, screenZ);
-            SimpleDrawer.DrawLine(simpleImage, coord41, coord11, screenZ);
-
-            //link front to rear
-
-            SimpleDrawer.DrawLine(simpleImage, coord1, coord11, screenZ);
-            SimpleDrawer.DrawLine(simpleImage, coord2, coord21, screenZ);
-            SimpleDrawer.DrawLine(simpleImage, coord3, coord31, screenZ);
-            SimpleDrawer.DrawLine(simpleImage, coord4, coord41, screenZ);
-            
-           
-            simpleMap.Save(simpleFileName, ImageFormat.Jpeg);
-
-            //view point stuff
-            //note that the blue square is the back face of the cube
-
-            //some change
-
-            string advancedFileName = "advanced.jpg";
-            if (File.Exists(advancedFileName)) File.Delete(advancedFileName);
-
-            Bitmap advancedMap = new Bitmap(1000, 1000);
-
-            Graphics advancedImage = Graphics.FromImage(advancedMap);
-
-            Coordinate3D viewPoint = new Coordinate3D(600,600, -1);
-
-            AdvancedDrawer drawer = new AdvancedDrawer(screenZ, viewPoint, advancedImage);
-
-            drawer.DrawFilledPolygon(Brushes.Black,
-                new Coordinate3D(0, 0, 0),
-                new Coordinate3D(1000, 0, 0),
-                new Coordinate3D(1000, 1000, 0),
-                new Coordinate3D(0, 1000, 0));
+            int width = 600;
+            int height = 600;
+            var bitmap = new System.Drawing.Bitmap(width, height);
             
 
+            RayTracer rayTracer = new RayTracer(width, height, (int x, int y, System.Drawing.Color color) =>
+            {
+                bitmap.SetPixel(x, y, color);
+            });
 
-            //draw rear square
+            var MyScene = new Scene()
+            {
+                Elements = new SceneObject[] { 
+                                new Plane() {
+                                    Norm = new Vector(0,1,0),
+                                    Point = new Vector(0,0,0),
+                                    Surface = Surfaces.CheckerBoard
+                                },
+                                new Sphere() {
+                                    Center = new Vector(0,1,0),
+                                    Radius = 1,
+                                    Surface = Surfaces.Shiny
+                                },
+                                new Sphere() {
+                                    Center = new Vector(-1,.5,1.5),
+                                    Radius = .5,
+                                    Surface = Surfaces.Shiny
+                                }},
+                Lights = new Light[] { 
+                                new Light() {
+                                    Position = new Vector(-2,2.5,0),
+                                    Color = new Color(.49,.07,.07)
+                                },
+                                new Light() {
+                                    Position = new Vector(1.5,2.5,1.5),
+                                    Color = new Color(.07,.07,.49)
+                                },
+                                new Light() {
+                                    Position = new Vector(1.5,2.5,-1.5),
+                                    Color = new Color(.07,.49,.071)
+                                },
+                                new Light() {
+                                    Position = new Vector(0,3.5,0),
+                                    Color = new Color(.21,.21,.35)
+                                }},
+                Camera = new Camera(new Vector(3, 2, 4), new Vector(-1, .5, 0))
+            };
 
-            //AdvancedDrawer.DrawLine(advancedImage, coord11, coord21, viewPoint, screenZ);
-            //AdvancedDrawer.DrawLine(advancedImage, coord21, coord31, viewPoint, screenZ);
-            //AdvancedDrawer.DrawLine(advancedImage, coord31, coord41, viewPoint, screenZ);
-            //AdvancedDrawer.DrawLine(advancedImage, coord41, coord11, viewPoint, screenZ);
+            rayTracer.Render(MyScene);
 
-            drawer.DrawFilledPolygon(Brushes.Beige, coord11, coord21, coord31, coord41);
-
-            //draw front square
-            drawer.DrawLine(coord1, coord2);
-            drawer.DrawLine(coord2, coord3);
-            drawer.DrawLine(coord3, coord4);
-            drawer.DrawLine(coord4, coord1);
-
-
-
-
-            
-
-            //link front to rear
-
-            drawer.DrawLine(coord1, coord11);
-            drawer.DrawLine(coord2, coord21);
-            drawer.DrawLine(coord3, coord31);
-            drawer.DrawLine(coord4, coord41);
-
-            advancedMap.Save(advancedFileName);
-
-
-
+            bitmap.Save(raytraceFileName);
         }
     }
 }
