@@ -205,13 +205,21 @@
         }
 
         /// <summary>
-        /// Determinue this vector is equal to another
+        /// Check if an object is equal to the current vector
         /// </summary>
-        /// <param name="v">The vector to compare to</param>
-        /// <returns>True if the vectors are equal</returns>
-        public bool Equals(Vector v)
+        /// <param name="obj">The object to test</param>
+        /// <returns>true if the object is equal</returns>
+        public override bool Equals(object obj)
         {
-            return (this.X == v.X) && (this.Y == v.Y) && (this.Z == v.Z);
+            var v = obj as Vector;
+
+            if (v != null)
+            {
+                // This works, but isn't always helpful as doubles aren't exact.
+                return (this.X == v.X) && (this.Y == v.Y) && (this.Z == v.Z); //this.Equals(v);
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -222,8 +230,17 @@
         /// <returns>True if the vectors are equal</returns>
         public static bool Equals(Vector v1, Vector v2)
         {
-            //return v1.Equals(v2);
-            return (v1.X == v2.X) && (v1.Y == v2.Y) && (v1.Z == v2.Z);
+            return v1.Equals(v2);
         }
+
+        /// <summary>
+        /// Convert to a friendly string for debugging
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return "X={0} Y={1} Z={2}".Formatted(this.X, this.Y, this.Z);
+        }
+
     }
 }
