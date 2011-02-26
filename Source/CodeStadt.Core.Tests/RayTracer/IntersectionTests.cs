@@ -12,6 +12,9 @@ namespace CodeStadt.Core.Tests.RayTracer
     [TestFixture]
     public class IntersectionTests
     {
+        /// <summary>
+        /// Test the implementation of IComparable for intersections
+        /// </summary>
         [Test]
         public void CanFindClosestIntersection()
         {
