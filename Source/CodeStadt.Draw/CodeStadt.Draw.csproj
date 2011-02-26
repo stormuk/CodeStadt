@@ -79,6 +79,7 @@
     <Compile Include="RayTracer\Environment\Scene.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="RayTracer\Environment\Screen.cs" />
     <Compile Include="RayTracer\Environment\Surface.cs">
       <SubType>Code</SubType>
     </Compile>

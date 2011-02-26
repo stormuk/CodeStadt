@@ -23,12 +23,10 @@ namespace CodeStadt.Core.Tests.RayTracer
             // Arrange
 
             // Act
-            var rt = new rt.RayTracer(100, 200, withresult);
+            var rt = new rt.RayTracer(withresult);
 
             // Assert
             Assert.NotNull(rt);
-            Assert.AreEqual(100, rt.ScreenWidth);
-            Assert.AreEqual(200, rt.ScreenHeight);
             Assert.AreEqual(5, rt.MaxDepth);
         }
 
@@ -38,12 +36,10 @@ namespace CodeStadt.Core.Tests.RayTracer
             // Arrange
 
             // Act
-            var rt = new rt.RayTracer(100, 200, withresult, 3);
+            var rt = new rt.RayTracer(withresult, 3);
 
             // Assert
             Assert.NotNull(rt);
-            Assert.AreEqual(100, rt.ScreenWidth);
-            Assert.AreEqual(200, rt.ScreenHeight);
             Assert.AreEqual(3, rt.MaxDepth);
         }
 

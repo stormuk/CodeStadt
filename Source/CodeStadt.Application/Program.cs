@@ -66,17 +66,18 @@
             var bitmap = new System.Drawing.Bitmap(width, height);
             
 
-            RayTracer rayTracer = new RayTracer(width, height, (int x, int y, System.Drawing.Color color) =>
+            RayTracer rayTracer = new RayTracer((int x, int y, System.Drawing.Color color) =>
             {
                 bitmap.SetPixel(x, y, color);
             });
 
+            var screen = new Screen(width, height);
             var MyScene = new Scene()
             {
                 Elements = new SceneObject[] { 
                                 new Plane() {
                                     Norm = new Vector(0,1,0),
-                                    Point = new Vector(0,0,0),
+                                    Point = new Vector(0,-1,0),
                                     Surface = Surfaces.CheckerBoard
                                 },
                                 new Sphere() {
@@ -106,7 +107,8 @@
                                     Position = new Vector(0,3.5,0),
                                     Color = new Color(.21,.21,.35)
                                 }},
-                Camera = new Camera(new Vector(3, 2, 4), new Vector(-1, .5, 0))
+                Camera = new Camera(new Vector(3, 2, 4), new Vector(-1, .5, 0), screen)
+                //Camera = new Camera(new Vector(-3, 2, -4), new Vector(-1,0.5,0))
             };
 
             rayTracer.Render(MyScene);

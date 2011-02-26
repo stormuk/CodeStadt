@@ -16,16 +16,6 @@ namespace CodeStadt.Draw.RayTracer
     public class RayTracer
     {
         /// <summary>
-        /// The width of the image to render
-        /// </summary>
-        public int ScreenWidth { get; private set; }
-
-        /// <summary>
-        /// The height of the image to render
-        /// </summary>
-        public int ScreenHeight { get; private set; }
-
-        /// <summary>
         /// The number of recursive traces to perform
         /// </summary>
         public int MaxDepth { get; private set; }
@@ -38,25 +28,19 @@ namespace CodeStadt.Draw.RayTracer
         /// <summary>
         /// Create a new instance of the RayTracer class.  Defaults the recursive depth to 5
         /// </summary>
-        /// <param name="screenWidth">The width of the image</param>
-        /// <param name="screenHeight">The height of the image</param>
         /// <param name="withResult">The action to perform</param>
-        public RayTracer(int screenWidth, int screenHeight, Action<int, int, System.Drawing.Color> withResult)
-            : this(screenWidth, screenHeight, withResult, 5)
+        public RayTracer(Action<int, int, System.Drawing.Color> withResult)
+            : this(withResult, 5)
         {
         }
 
         /// <summary>
         /// Create a new instance of the RayTracer class
         /// </summary>
-        /// <param name="screenWidth">The width of the image</param>
-        /// <param name="screenHeight">The height of the image</param>
         /// <param name="withResult">The action to perform</param>
         /// <param name="depth">The recursive depth</param>
-        public RayTracer(int screenWidth, int screenHeight, Action<int, int, System.Drawing.Color> withResult, int depth)
+        public RayTracer(Action<int, int, System.Drawing.Color> withResult, int depth)
         {
-            this.ScreenWidth = screenWidth;
-            this.ScreenHeight = screenHeight;
             this.withResult = withResult;
             this.MaxDepth = depth;
         }
@@ -150,39 +134,7 @@ namespace CodeStadt.Draw.RayTracer
             return ret + this.GetReflectionColor(intersection.Element, position + 0.001 * reflectDir, normal, reflectDir, scene, depth);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="x"></param>
-        /// <returns></returns>
-        private double RecenterX(double x)
-        {
-            return (x - (this.ScreenWidth / 2.0)) / (2.0 * this.ScreenWidth);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="y"></param>
-        /// <returns></returns>
-        private double RecenterY(double y)
-        {
-            return -(y - (this.ScreenHeight / 2.0)) / (2.0 * this.ScreenHeight);
-        }
-
-        /// <summary>
-        /// Get the direction of the ray to trace.  From the position of the camera
-        /// to the point (x,y) in the scene.
-        /// </summary>
-        /// <param name="x">The x co-ordinate of the pixel to draw</param>
-        /// <param name="y">The y co-ordinate of the pixel to draw</param>
-        /// <param name="camera">The camera viewing the scene</param>
-        /// <returns>The direction of the ray to trace to find color of (x,y)</returns>
-        private Vector GetRayDirection(double x, double y, Camera camera)
-        {
-            // Forward is the starting direction of the camera, we then need to offset to look at the point (x,y)
-            return (camera.Forward + ((this.RecenterX(x) * camera.Right) + (this.RecenterY(y) * camera.Up))).Normalise;
-        }
+        
 
         /// <summary>
         /// Render the scene
@@ -190,11 +142,11 @@ namespace CodeStadt.Draw.RayTracer
         /// <param name="scene">The scene to render</param>
         public void Render(Scene scene)
         {
-            for (int y = 0; y < this.ScreenHeight; y++)
+            for (int y = 0; y < scene.Camera.Screen.Height; y++)
             {
-                for (int x = 0; x < this.ScreenWidth; x++)
+                for (int x = 0; x < scene.Camera.Screen.Width; x++)
                 {
-                    var color = TraceRay(new Ray() { Start = scene.Camera.Position, Direction = this.GetRayDirection(x, y, scene.Camera) }, scene, 0);
+                    var color = this.TraceRay(new Ray() { Start = scene.Camera.Position, Direction = scene.Camera.GetRayDirection(x, y) }, scene, 0);
                     this.withResult(x, y, color.ToDrawingColor());
                 }
             }
