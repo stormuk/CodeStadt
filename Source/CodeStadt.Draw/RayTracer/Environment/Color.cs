@@ -167,25 +167,35 @@
         }
 
         /// <summary>
-        /// Ensure that the value for a color component is not above 1.
-        /// </summary>
-        /// <param name="d"></param>
-        /// <returns></returns>
-        public double Legalize(double d)
-        {
-            return Math.Min(1, d);
-        }
-
-        /// <summary>
         /// Convert the value of the current object to a system color object
         /// </summary>
         /// <returns>A system color object</returns>
         public System.Drawing.Color ToDrawingColor()
         {
-            return System.Drawing.Color.FromArgb((int)(Legalize(R) * 255), (int)(Legalize(G) * 255), (int)(Legalize(B) * 255));
+            return System.Drawing.Color.FromArgb(
+                            (int)(Math.Min(1, this.R) * 255), 
+                            (int)(Math.Min(1, this.G) * 255), 
+                            (int)(Math.Min(1, this.B) * 255));
         }
 
         public static readonly Color DefaultColor = new Color(0, 0, 0);
         public static readonly Color Background = new Color(0, 0, 0);
+
+        public override bool Equals(object obj)
+        {
+            var c = obj as Color;
+
+            if (c == null)
+            {
+                return false;
+            }
+
+            return (this.R == c.R) && (this.G == c.G) && (this.B == c.B);
+        }
+
+        public static bool Equals(Color c1, Color c2)
+        {
+            return c1.Equals(c2);
+        }
     }
 }
