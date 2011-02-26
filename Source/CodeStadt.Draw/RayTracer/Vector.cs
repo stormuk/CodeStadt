@@ -222,7 +222,8 @@
         /// <returns>True if the vectors are equal</returns>
         public static bool Equals(Vector v1, Vector v2)
         {
-            return v1.Equals(v2);
+            //return v1.Equals(v2);
+            return (v1.X == v2.X) && (v1.Y == v2.Y) && (v1.Z == v2.Z);
         }
     }
 }
