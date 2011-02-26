@@ -56,10 +56,7 @@ namespace CodeStadt.Draw.RayTracer
         /// <returns>The closest of intersection</returns>
         private Intersection ClosestIntersection(Ray ray, Scene scene)
         {
-            return scene.Elements
-                        .Select(obj => obj.Intersect(ray))
-                        .Where(inter => inter != null)
-                        .Min();
+            return scene.Intersect(ray).Min();
         }
 
         /// <summary>

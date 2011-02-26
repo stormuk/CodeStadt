@@ -31,8 +31,7 @@
         /// <returns>The intersection points</returns>
         public IEnumerable<Intersection> Intersect(Ray r)
         {
-            return from el in Elements
-                   select el.Intersect(r);
+            return this.Elements.Select(el => el.Intersect(r)).Where(i => i != null);
         }
     }
 }
