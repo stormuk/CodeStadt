@@ -34,7 +34,7 @@
 
             double denominator = Vector.Dot(this.Norm, ray.Direction);
 
-            if (denominator > 0)
+            if (denominator >= 0)
             {
                 return null;
             }
@@ -57,7 +57,7 @@
         /// <returns>The normal vector</returns>
         public override Vector Normal(Vector position)
         {
-            return Norm;
+            return this.Norm;
         }
     }
 }
