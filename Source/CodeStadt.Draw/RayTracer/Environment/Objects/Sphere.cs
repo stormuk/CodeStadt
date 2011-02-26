@@ -25,10 +25,10 @@
         public override Intersection Intersect(Ray ray)
         {
             // Direction from start of ray to center of sphere
-            Vector eo = this.Center - ray.Start;
+            Vector dirToCenter = this.Center - ray.Start;
 
             // Cosine of angle between center ray and ray's direction
-            double v = Vector.Dot(eo, ray.Direction);
+            double v = Vector.Dot(dirToCenter, ray.Direction);
             double distance;
 
             // Is the angle greater-equal 90deg (therefore intersection not possible)
@@ -38,7 +38,7 @@
             }
             else
             {
-                double disc = Math.Pow(Radius, 2) - (Vector.Dot(eo, eo) - Math.Pow(v, 2));
+                double disc = Math.Pow(Radius, 2) - (Vector.Dot(dirToCenter, dirToCenter) - Math.Pow(v, 2));
                 distance = disc < 0 ? 0 : v - Math.Sqrt(disc);
             }
 
