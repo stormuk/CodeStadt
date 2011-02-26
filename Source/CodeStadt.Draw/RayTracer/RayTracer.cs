@@ -189,16 +189,17 @@ namespace CodeStadt.Draw.RayTracer
         }
 
         /// <summary>
-        /// 
+        /// Get the direction of the ray to trace.  From the position of the camera
+        /// to the point (x,y) in the scene.
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="camera"></param>
-        /// <returns></returns>
-        private Vector GetPoint(double x, double y, Camera camera)
+        /// <param name="x">The x co-ordinate of the pixel to draw</param>
+        /// <param name="y">The y co-ordinate of the pixel to draw</param>
+        /// <param name="camera">The camera viewing the scene</param>
+        /// <returns>The direction of the ray to trace to find color of (x,y)</returns>
+        private Vector GetRayDirection(double x, double y, Camera camera)
         {
-            return (Vector.Plus(camera.Forward, Vector.Plus(Vector.Times(RecenterX(x), camera.Right),
-                                                                       Vector.Times(RecenterY(y), camera.Up)))).Normalise;
+            // Forward is the starting direction of the camera, we then need to offset to look at the point (x,y)
+            return (camera.Forward + ((this.RecenterX(x) * camera.Right) + (this.RecenterY(y) * camera.Up))).Normalise;
         }
 
         /// <summary>
@@ -211,7 +212,7 @@ namespace CodeStadt.Draw.RayTracer
             {
                 for (int x = 0; x < this.screenWidth; x++)
                 {
-                    var color = TraceRay(new Ray() { Start = scene.Camera.Position, Direction = GetPoint(x, y, scene.Camera) }, scene, 0);
+                    var color = TraceRay(new Ray() { Start = scene.Camera.Position, Direction = this.GetRayDirection(x, y, scene.Camera) }, scene, 0);
                     this.withResult(x, y, color.ToDrawingColor());
                 }
             }
