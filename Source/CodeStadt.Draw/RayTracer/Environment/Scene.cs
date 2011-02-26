@@ -31,7 +31,34 @@
         /// <returns>The intersection points</returns>
         public IEnumerable<Intersection> Intersect(Ray r)
         {
-            return this.Elements.Select(el => el.Intersect(r)).Where(i => i != null);
+            // We're getting some really short, negative intersections.  so trying with distance > 0
+            return this.Elements.Select(el => el.Intersect(r)).Where(i => i != null && i.Distance > 0);
+        }
+
+        /// <summary>
+        /// Calculate the closest intersection between a ray and the items in the scene.
+        /// </summary>
+        /// <param name="ray">The ray to test</param>
+        /// <returns>The closest of intersection</returns>
+        public Intersection ClosestIntersection(Ray r)
+        {
+            return this.Intersect(r).Min();
+        }
+
+        /// <summary>
+        /// Test a ray against the objects in the scene
+        /// </summary>
+        /// <param name="ray">The ray to test</param>
+        /// <returns>The distance to the point of intersection</returns>
+        public double TestRay(Ray ray)
+        {
+            var isect = this.ClosestIntersection(ray);
+            if (isect == null)
+            {
+                return 0;
+            }
+
+            return isect.Distance;
         }
     }
 }

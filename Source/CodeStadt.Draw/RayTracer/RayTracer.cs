@@ -18,17 +18,17 @@ namespace CodeStadt.Draw.RayTracer
         /// <summary>
         /// The width of the image to render
         /// </summary>
-        private int screenWidth;
+        public int ScreenWidth { get; private set; }
 
         /// <summary>
         /// The height of the image to render
         /// </summary>
-        private int screenHeight;
+        public int ScreenHeight { get; private set; }
 
         /// <summary>
         /// The number of recursive traces to perform
         /// </summary>
-        private const int MaxDepth = 5;
+        public int MaxDepth { get; private set; }
 
         /// <summary>
         /// An action to perform with the result for each pixel
@@ -36,44 +36,29 @@ namespace CodeStadt.Draw.RayTracer
         public Action<int, int, System.Drawing.Color> withResult;
 
         /// <summary>
-        /// Create a new instance of the RayTracer class
+        /// Create a new instance of the RayTracer class.  Defaults the recursive depth to 5
         /// </summary>
         /// <param name="screenWidth">The width of the image</param>
         /// <param name="screenHeight">The height of the image</param>
         /// <param name="withResult">The action to perform</param>
         public RayTracer(int screenWidth, int screenHeight, Action<int, int, System.Drawing.Color> withResult)
+            : this(screenWidth, screenHeight, withResult, 5)
         {
-            this.screenWidth = screenWidth;
-            this.screenHeight = screenHeight;
+        }
+
+        /// <summary>
+        /// Create a new instance of the RayTracer class
+        /// </summary>
+        /// <param name="screenWidth">The width of the image</param>
+        /// <param name="screenHeight">The height of the image</param>
+        /// <param name="withResult">The action to perform</param>
+        /// <param name="depth">The recursive depth</param>
+        public RayTracer(int screenWidth, int screenHeight, Action<int, int, System.Drawing.Color> withResult, int depth)
+        {
+            this.ScreenWidth = screenWidth;
+            this.ScreenHeight = screenHeight;
             this.withResult = withResult;
-        }
-
-        /// <summary>
-        /// Calculate the closest intersection between a ray and the items in the scene.
-        /// </summary>
-        /// <param name="ray">The ray to test</param>
-        /// <param name="scene">The scene objects</param>
-        /// <returns>The closest of intersection</returns>
-        private Intersection ClosestIntersection(Ray ray, Scene scene)
-        {
-            return scene.Intersect(ray).Min();
-        }
-
-        /// <summary>
-        /// Test a ray against the objects in the scene
-        /// </summary>
-        /// <param name="ray">The ray to test</param>
-        /// <param name="scene">The scene objects</param>
-        /// <returns>The distance to the point of intersection</returns>
-        private double TestRay(Ray ray, Scene scene)
-        {
-            var isect = this.ClosestIntersection(ray, scene);
-            if (isect == null)
-            {
-                return 0;
-            }
-
-            return isect.Distance;
+            this.MaxDepth = depth;
         }
 
         /// <summary>
@@ -85,7 +70,7 @@ namespace CodeStadt.Draw.RayTracer
         /// <returns>The color of the pixel</returns>
         private Color TraceRay(Ray ray, Scene scene, int depth)
         {
-            var intersection = this.ClosestIntersection(ray, scene);
+            var intersection = scene.ClosestIntersection(ray);
             if (intersection == null)
             {
                 return Color.Background;
@@ -110,7 +95,7 @@ namespace CodeStadt.Draw.RayTracer
             {
                 Vector lightDirection = light.Position - position;
                 Vector lightUnitVector = lightDirection.Normalise;
-                double intersectionDistance = this.TestRay(new Ray() { Start = position, Direction = lightUnitVector }, scene);
+                double intersectionDistance = scene.TestRay(new Ray() { Start = position, Direction = lightUnitVector });
                 bool isInShadow = !((intersectionDistance > lightDirection.Magnitude) || (intersectionDistance == 0));
 
                 if (!isInShadow)
@@ -172,7 +157,7 @@ namespace CodeStadt.Draw.RayTracer
         /// <returns></returns>
         private double RecenterX(double x)
         {
-            return (x - (this.screenWidth / 2.0)) / (2.0 * this.screenWidth);
+            return (x - (this.ScreenWidth / 2.0)) / (2.0 * this.ScreenWidth);
         }
 
         /// <summary>
@@ -182,7 +167,7 @@ namespace CodeStadt.Draw.RayTracer
         /// <returns></returns>
         private double RecenterY(double y)
         {
-            return -(y - (this.screenHeight / 2.0)) / (2.0 * this.screenHeight);
+            return -(y - (this.ScreenHeight / 2.0)) / (2.0 * this.ScreenHeight);
         }
 
         /// <summary>
@@ -205,9 +190,9 @@ namespace CodeStadt.Draw.RayTracer
         /// <param name="scene">The scene to render</param>
         public void Render(Scene scene)
         {
-            for (int y = 0; y < this.screenHeight; y++)
+            for (int y = 0; y < this.ScreenHeight; y++)
             {
-                for (int x = 0; x < this.screenWidth; x++)
+                for (int x = 0; x < this.ScreenWidth; x++)
                 {
                     var color = TraceRay(new Ray() { Start = scene.Camera.Position, Direction = this.GetRayDirection(x, y, scene.Camera) }, scene, 0);
                     this.withResult(x, y, color.ToDrawingColor());
