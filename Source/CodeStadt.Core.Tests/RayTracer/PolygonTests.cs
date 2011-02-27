@@ -291,5 +291,21 @@ namespace CodeStadt.Core.Tests.RayTracer
             // Assert
             Assert.IsNull(isect);
         }
+
+        [Test]
+        public void CanFailToInsersectTheBackFaceOfAPolygon()
+        {
+            // Arrange
+            var points = new List<Vector>() { new Vector(0, 0, 0), new Vector(1, 0, 0), new Vector(1, 1, 0), new Vector(0, 1, 0) };
+            var poly = new Polygon(points, new Vector(0, 0, 1));
+
+            var ray = new Ray() { Start = new Vector(0.5, 0.5, -0.5), Direction = new Vector(0, 0, 1) };
+
+            // Act
+            var isect = poly.Intersect(ray);
+
+            // Assert
+            Assert.IsNull(isect);
+        }
     }
 }
