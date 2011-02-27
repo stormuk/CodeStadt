@@ -90,6 +90,11 @@
             // details on how this works.
             double denominator = Vector.Dot(this.Norm, ray.Direction);
 
+            // I believe this works as follows
+            // The dot product calculates the angle between two vectors.
+            // If the angle is greater than 90deg, the dot product is > 0
+            // If the angle is greater than 90deg, the ray must be intersecting
+            // the back of the plane, so we ignore it
             if (denominator >= 0)
             {
                 return null;
