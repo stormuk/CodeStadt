@@ -9,6 +9,7 @@
     /// <remarks>
     /// The class is immutable
     /// </remarks>
+    [System.Diagnostics.DebuggerDisplay("X = {X}, Y = {Y}, Z = {Z}")]
     public sealed class Vector
     {
         /// <summary>
