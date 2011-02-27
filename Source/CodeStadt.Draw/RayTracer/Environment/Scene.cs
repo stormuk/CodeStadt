@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using CodeStadt.Draw.RayTracer.Environment.Objects;
+    using CodeStadt.Draw.RayTracer.Environment.Models;
 
     /// <summary>
     /// Represent the scene: objects, lighting and camera.
@@ -12,17 +13,23 @@
         /// <summary>
         /// The objects in the scene
         /// </summary>
-        public SceneObject[] Elements { get; set; }
+        public IList<SceneObject> Elements { get; set; }
 
         /// <summary>
         /// The lights in the world
         /// </summary>
-        public Light[] Lights { get; set; }
+        public IList<Light> Lights { get; set; }
 
         /// <summary>
         /// The camera position
         /// </summary>
         public Camera Camera { get; set; }
+
+        public Scene()
+        {
+            this.Elements = new List<SceneObject>();
+            this.Lights = new List<Light>();
+        }
 
         /// <summary>
         /// Perform an intersection test between a ray and the elements in the scene
@@ -59,6 +66,14 @@
             }
 
             return isect.Distance;
+        }
+
+        public void AddModel(Model m)
+        {
+            foreach (var obj in m.Objects)
+            {
+                this.Elements.Add(obj);
+            }
         }
     }
 }
