@@ -11,7 +11,7 @@
         public Vector Position { get; private set; }
 
         /// <summary>
-        /// Vector pointing forwards from the camera
+        /// Vector pointing forwards from the camera towards lookAt from position.
         /// </summary>
         public Vector Forward { get; private set; }
 
@@ -34,14 +34,14 @@
         /// Create a new instance of the camera class
         /// </summary>
         /// <param name="position">The position of the camera in 3D space</param>
-        /// <param name="direction">The direction the camera is pointing</param>
-        public Camera(Vector position, Vector direction, Screen screen)
+        /// <param name="lookAt">The point the camera is looking at</param>
+        public Camera(Vector position, Vector lookAt, Screen screen)
         {
             // Remember: The cross of two vectors gives you a normal vector out of the cross
             var down = new Vector(0, -1, 0);
             
             this.Position = position;
-            this.Forward = (direction - position).Normalise;   
+            this.Forward = (lookAt - position).Normalise;   
             this.Right = this.Forward.Cross(down).Normalise; 
             this.Up = this.Forward.Cross(this.Right).Normalise;
 
