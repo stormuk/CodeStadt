@@ -25,7 +25,7 @@ namespace CodeStadt.Core.Tests.RayTracer
             // Assert
             Assert.AreEqual(pos, camera.Position);
 
-            // Forward is a unit vector pointing in 'direction' from 'position'
+            // Forward is a unit vector pointing in 'lookAt' from 'position'
             Assert.IsTrue(camera.Forward.Equals(new Vector(0, 0, 1)));
 
             // Right
