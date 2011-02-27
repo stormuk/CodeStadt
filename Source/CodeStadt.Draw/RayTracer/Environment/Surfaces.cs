@@ -35,9 +35,9 @@
             new Surface()
             {
                 Diffuse = pos => new Color(1,0,0),
-                Specular = pos => new Color(0.5,0.5,0.5),
-                Reflectiveness = pos => 0.8,
-                Roughness = 100
+                Specular = pos => new Color(1,1,1),
+                Reflectiveness = pos => 0.1,
+                Roughness = 150
             };
 
         public static readonly Surface Green =
@@ -63,7 +63,7 @@
             {
                 Diffuse = pos => new Color(1, 1, 1),
                 Specular = pos => new Color(0.5, 0.5, 0.5),
-                Reflectiveness = pos => 0.8,
+                Reflectiveness = pos => 0,
                 Roughness = 100
             };
     }
