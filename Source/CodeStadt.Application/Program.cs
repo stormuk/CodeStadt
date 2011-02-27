@@ -8,6 +8,7 @@
     using CodeStadt.Draw.RayTracer.Environment.Objects;
     using Driven.Metrics.metrics;
     using Driven.Metrics.Reporting;
+    using System.Collections.Generic;
 
     class Program
     {
@@ -75,21 +76,58 @@
             var MyScene = new Scene()
             {
                 Elements = new SceneObject[] { 
-                                new Plane() {
-                                    Norm = new Vector(0,1,0),
-                                    Point = new Vector(0,-1,0),
-                                    Surface = Surfaces.CheckerBoard
-                                },
-                                new Sphere() {
-                                    Center = new Vector(0,1,0),
-                                    Radius = 1,
-                                    Surface = Surfaces.Shiny
-                                },
-                                new Sphere() {
-                                    Center = new Vector(-1,.5,1.5),
-                                    Radius = .5,
-                                    Surface = Surfaces.Shiny
-                                }},
+                                //new Plane() {
+                                //    Norm = new Vector(0,1,0),
+                                //    Point = new Vector(0,-0.5,0),
+                                //    Surface = Surfaces.CheckerBoard
+                                //},
+                                new Polygon(new List<Vector>(){ new Vector(0,0,0), new Vector(0,1,0), new Vector(1,1,0), new Vector(1,0,0)}, new Vector(0,0,1))
+                                {
+                                    Surface = Surfaces.White
+                                }
+                                ,new Polygon(new List<Vector>(){ new Vector(0,0,0), new Vector(0,1,0), new Vector(0,1,1), new Vector(0,0,1)}, new Vector(1,0,0))
+                                {
+                                    Surface = Surfaces.White
+                                }
+                                ,new Polygon(new List<Vector>(){ new Vector(0,0,0), new Vector(0,0,1), new Vector(1,0,1), new Vector(1,0,0)}, new Vector(0,1,0))
+                                {
+                                    Surface = Surfaces.White
+                                }
+                                //,new Sphere() {
+                                //    Center = new Vector(0,1,0),
+                                //    Radius = 1,
+                                //    Surface = Surfaces.Shiny
+                                //},
+                                //new Sphere() {
+                                //    Center = new Vector(-1,.5,1.5),
+                                //    Radius = .5,
+                                //    Surface = Surfaces.Shiny
+                                //}
+
+                                // FOR TESTING
+                                //,new Line(){
+                                //    Point = new Vector(0,0,0),
+                                //    Direction = new Vector(1,0,0),
+                                //    Surface = Surfaces.Green
+                                //} 
+                                //,new Line(){
+                                //    Point = new Vector(0,0,0),
+                                //    Direction = new Vector(0,1,0),
+                                //    Surface = Surfaces.Green
+                                //} 
+                                //,new Line(){
+                                //    Point = new Vector(0,0,0),
+                                //    Direction = new Vector(0,0,1),
+                                //    Surface = Surfaces.Green
+                                //}
+                                //,new Line(){
+                                //    Point = new Vector(1,0,0),
+                                //    Direction = new Vector(0,0,1),
+                                //    Surface = Surfaces.Green
+                                //}
+
+                
+                },
                 Lights = new Light[] { 
                                 new Light() {
                                     Position = new Vector(-2,2.5,0),
@@ -107,7 +145,7 @@
                                     Position = new Vector(0,3.5,0),
                                     Color = new Color(.21,.21,.35)
                                 }},
-                Camera = new Camera(new Vector(3, 2, 4), new Vector(-1, .5, 0), screen)
+                Camera = new Camera(new Vector(8, 2,6), new Vector(-1, 0, 0), screen)
                 //Camera = new Camera(new Vector(-3, 2, -4), new Vector(-1,0.5,0))
             };
 
