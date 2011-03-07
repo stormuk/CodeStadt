@@ -32,7 +32,9 @@
         int IComparable.CompareTo(object obj)
         {
             var isect = obj as Intersection;
-            return (int)(this.Distance - isect.Distance);
+            var result  =this.Distance - isect.Distance;
+            if (result == 0) return 0;
+            return (result >0) ? 1 : -1;
         }
     }
 }
