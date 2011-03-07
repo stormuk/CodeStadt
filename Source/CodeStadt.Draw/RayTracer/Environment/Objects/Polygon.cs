@@ -89,12 +89,9 @@
             var v = ray.Start - this.Points[0];
             var d = this.Norm.Dot(v);
 
-            if (d < 0)
-            {
-                return null;
-            }
-
-            if (Math.Abs(d) < 0.001)
+            // Lets check that the ray starts in the positive half-space
+            // (leaving a little room for double error)
+            if (d < 0 || Math.Abs(d) < 0.001)
             {
                 return null;
             }
@@ -104,15 +101,11 @@
             // details on how this works.
             double denominator = Vector.Dot(this.Norm, ray.Direction);
 
-            // I believe this works as follows
-            // The dot product calculates the angle between two vectors.
-            // If the angle is greater than 90deg, the dot product is > 0
-            // If the angle is greater than 90deg, the ray must be intersecting
-            // the back of the plane, so we ignore it
-            //if (denominator < 0)
-            //{
-            //    return null;
-            //}
+            // Check for a parallel ray (with room for error)
+            if (Math.Abs(denominator) < 0.0001)
+            {
+                return null;
+            }
 
             var distance = (this.Points[0] - ray.Start).Dot(this.Norm) / denominator;
 
