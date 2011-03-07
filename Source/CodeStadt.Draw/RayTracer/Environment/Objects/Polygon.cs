@@ -85,6 +85,20 @@
         /// <returns></returns>
         public Vector GetPointOfIntersectionWithPlane(Ray ray)
         {
+            // Lets do a half-space test to see if the ray will intersect the front of back of the polygon
+            var v = ray.Start - this.Points[0];
+            var d = this.Norm.Dot(v);
+
+            if (d < 0)
+            {
+                return null;
+            }
+
+            if (Math.Abs(d) < 0.001)
+            {
+                return null;
+            }
+
             // Intersect the ray with the plane the polygon lies in and 
             // find the point of intersection.  See notes in Plane for
             // details on how this works.
@@ -95,15 +109,15 @@
             // If the angle is greater than 90deg, the dot product is > 0
             // If the angle is greater than 90deg, the ray must be intersecting
             // the back of the plane, so we ignore it
-            if (denominator >= 0)
-            {
-                return null;
-            }
+            //if (denominator < 0)
+            //{
+            //    return null;
+            //}
 
-            var d = (this.Points[0] - ray.Start).Dot(this.Norm) / denominator;
+            var distance = (this.Points[0] - ray.Start).Dot(this.Norm) / denominator;
 
             // if d is the distance.  does it follow that ray.Start + d * ray.Direction.Normalise
-            return ray.Start + (d * ray.Direction.Normalise);
+            return ray.Start + (distance * ray.Direction.Normalise);
         }
 
         /// <summary>
@@ -176,7 +190,7 @@
                 }
 
                 if ((newPoint.X < shiftedTestPoint.X) == (shiftedTestPoint.X <= oldPoint.X)
-                        && ((long)shiftedTestPoint.Y - (long)p1.Y) * (long)(p2.X - p1.X) < ((long)p2.Y - (long)p1.Y) * (long)(shiftedTestPoint.X - p1.X))
+                        && ((double)shiftedTestPoint.Y - (double)p1.Y) * (double)(p2.X - p1.X) < ((double)p2.Y - (double)p1.Y) * (double)(shiftedTestPoint.X - p1.X))
                 {
                     inside = !inside;
                 }
