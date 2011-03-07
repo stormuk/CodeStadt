@@ -27,5 +27,21 @@ namespace CodeStadt.Core.Tests.RayTracer
             // Assert
             Assert.AreEqual(1, closest.Distance);
         }
+
+        /// <summary>
+        /// Test the implementation of IComparable for intersections
+        /// </summary>
+        [Test]
+        public void CanFindClosestIntersectionWithDecimalDistances()
+        {
+            // Arrange
+            var isect = from x in new double[] { 1.2, 0.3, 0.1, 0.9 } select new Intersection() { Distance = x };
+
+            // Act
+            var closest = isect.Min();
+
+            // Assert
+            Assert.AreEqual(0.1, closest.Distance);
+        }
     }
 }
