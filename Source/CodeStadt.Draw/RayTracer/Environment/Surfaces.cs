@@ -36,7 +36,7 @@
             {
                 Diffuse = pos => new Color(1,0,0),
                 Specular = pos => new Color(1,1,1),
-                Reflectiveness = pos => 0.1,
+                Reflectiveness = pos => 0,
                 Roughness = 150
             };
 
