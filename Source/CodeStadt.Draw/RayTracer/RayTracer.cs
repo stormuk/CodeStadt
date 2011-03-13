@@ -64,31 +64,41 @@ namespace CodeStadt.Draw.RayTracer
         }
 
         /// <summary>
-        /// 
+        /// Get the color of an object at a point of intersection by tracing back to the light sources.
+        /// This creates shadows and adds color if the lights are off-white.
         /// </summary>
-        /// <param name="element"></param>
-        /// <param name="position"></param>
-        /// <param name="norm"></param>
-        /// <param name="rayDirection"></param>
-        /// <param name="scene"></param>
-        /// <returns></returns>
-        private Color GetNaturalColor(SceneObject element, Vector position, Vector norm, Vector rayDirection, Scene scene)
+        /// <param name="element">The object being intersected</param>
+        /// <param name="position">The point of intersection on the object</param>
+        /// <param name="norm">The normal at the point of intersection</param>
+        /// <param name="reflectDirection">The direction of the light reflection off of the surface</param>
+        /// <param name="scene">The scene description</param>
+        /// <returns>The color of the object due to the scenes lighting</returns>
+        private Color GetNaturalColor(SceneObject element, Vector position, Vector norm, Vector reflectDirection, Scene scene)
         {
             var ret = new Color(0, 0, 0);
             foreach (Light light in scene.Lights)
             {
+                // Direction from the point of intersction to the light source
                 Vector lightDirection = light.Position - position;
                 Vector lightUnitVector = lightDirection.Normalise;
+
+                // Perform an intersection test in the direction of the light source to determine if we are in a shadow
                 double intersectionDistance = scene.TestRay(new Ray() { Start = position, Direction = lightUnitVector });
                 bool isInShadow = !((intersectionDistance > lightDirection.Magnitude) || (intersectionDistance == 0));
 
                 if (!isInShadow)
                 {
+                    // Check the light is shining on the front of the object.  Use the angle to determine
+                    // the brightness of the light.
                     double angleOfIllumination = Vector.Dot(lightUnitVector, norm);
-                    Color lcolor = angleOfIllumination > 0 ? angleOfIllumination * light.Color : new Color(0, 0, 0);
-                    double specular = Vector.Dot(lightUnitVector, rayDirection.Normalise);
-                    Color scolor = specular > 0 ? Color.Times(Math.Pow(specular, element.Surface.Roughness), light.Color) : new Color(0, 0, 0);
-                    ret = ret + (element.Surface.Diffuse(position) * lcolor) + (element.Surface.Specular(position) * scolor);
+                    Color lightColor = angleOfIllumination > 0 ? angleOfIllumination * light.Color : new Color(0, 0, 0);
+
+                    // Determine of the light is in the direction of a reflection, leading to a specular effect
+                    double specular = Vector.Dot(lightUnitVector, reflectDirection.Normalise);
+
+                    // Calculate color of object based on surface qualities
+                    Color specularColor = specular > 0 ? Math.Pow(specular, element.Surface.Roughness) * light.Color : new Color(0, 0, 0);
+                    ret = ret + (element.Surface.Diffuse(position) * lightColor) + (element.Surface.Specular(position) * specularColor);
                 }
             }
 
@@ -147,9 +157,7 @@ namespace CodeStadt.Draw.RayTracer
             // The color at this point is equal to the color of the object + any color reflecting on to it
             return ret + this.GetReflectionColor(intersection.Element, position + 0.001 * reflectDir, normal, reflectDir, scene, depth);
         }
-
-        
-
+              
         /// <summary>
         /// Render the scene
         /// </summary>
