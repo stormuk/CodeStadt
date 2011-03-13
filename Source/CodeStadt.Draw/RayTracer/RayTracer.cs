@@ -96,22 +96,29 @@ namespace CodeStadt.Draw.RayTracer
         }
 
         /// <summary>
-        /// 
+        /// Calculate the color being reflected at a point of intersection
         /// </summary>
-        /// <param name="element"></param>
-        /// <param name="position"></param>
-        /// <param name="norm"></param>
-        /// <param name="rayDirection"></param>
-        /// <param name="scene"></param>
-        /// <param name="depth"></param>
-        /// <returns></returns>
-        private Color GetReflectionColor(SceneObject element, Vector position, Vector norm, Vector rayDirection, Scene scene, int depth)
+        /// <param name="element">The object being intersected</param>
+        /// <param name="position">The position on the objects surface</param>
+        /// <param name="norm">The normal at the point of intersection</param>
+        /// <param name="reflectDirection">The direction of the reflected ray</param>
+        /// <param name="scene">The scene description</param>
+        /// <param name="depth">The current depth of recursion</param>
+        /// <returns>The color being reflected</returns>
+        private Color GetReflectionColor(SceneObject element, Vector position, Vector norm, Vector reflectDirection, Scene scene, int depth)
         {
-            return element.Surface.Reflectiveness(position) * this.TraceRay(new Ray() { Start = position, Direction = rayDirection }, scene, depth + 1);
+            // Only calculate reflected color if the surface is reflective
+            var reflectiveness = element.Surface.Reflectiveness(position);
+            if (reflectiveness > 0)
+            {
+                return reflectiveness * this.TraceRay(new Ray() { Start = position, Direction = reflectDirection }, scene, depth + 1);
+            }
+
+            return new Color(0, 0, 0);
         }
 
         /// <summary>
-        /// Get the color for the pixel
+        /// Get the color of an object at a point of intersection
         /// </summary>
         /// <param name="intersection">The last point of intersection</param>
         /// <param name="scene">The scene description</param>
@@ -119,10 +126,16 @@ namespace CodeStadt.Draw.RayTracer
         /// <returns>The color of the pixel</returns>
         private Color Shade(Intersection intersection, Scene scene, int depth)
         {
-            var direction = intersection.Ray.Direction;
+            // Use Fresnel's law to calculate the direction of the reflected light ray
+            // R = 2(N.L)*N - L
+            // R = reflection direction
+            // N = Normal at point of intersection
+            // L = -I
+            // I = direction of ray
+            var direction = -1 * intersection.Ray.Direction;
             var position = (intersection.Distance * intersection.Ray.Direction) + intersection.Ray.Start;
             var normal = intersection.Element.Normal(position);
-            var reflectDir = direction - (2 * normal.Dot(direction) * normal);
+            var reflectDir = (2 * normal.Dot(direction) * normal) - direction;
 
             var ret = Color.DefaultColor;
             ret = ret + this.GetNaturalColor(intersection.Element, position, normal, reflectDir, scene);
@@ -131,6 +144,7 @@ namespace CodeStadt.Draw.RayTracer
                 return ret + new Color(.5, .5, .5);
             }
 
+            // The color at this point is equal to the color of the object + any color reflecting on to it
             return ret + this.GetReflectionColor(intersection.Element, position + 0.001 * reflectDir, normal, reflectDir, scene, depth);
         }
 
